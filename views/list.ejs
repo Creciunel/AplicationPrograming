@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<%- include('./partials/head')%>
+	</head>
+	<body>
+		<%- include('./partials/navbar')%> 
+		<div class="accordion " id="accordionExample"></div>
+		<%  for(e of list){ %>
+			<div class="accordion-item w-75 mx-auto mb-2">
+			  <h2 class="accordion-header" id="headingOne">
+				<button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+				  Numele <%= e.nume %>
+				</button>
+			  </h2>
+			  <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+				<div class="accordion-body">
+				  <strong>Prenumele <a href="/list<%= e.id %>"><%= e.prenume %></a> </strong> Nota <%= e.nota %>
+				</div>
+			  </div>
+			</div>
+<%}%>
+	</div>
+		<script
+			src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
+			integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
+			crossorigin="anonymous"
+		></script>
+	</body>
+</html>
