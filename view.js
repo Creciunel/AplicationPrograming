@@ -3,7 +3,6 @@ const elevRepo = require("./ElevRepo");
 const express = require("express");
 const path = require("path");
 const bodyParser = require("body-parser");
-const e = require("express");
 
 const app = express();
 app.set("view engine", "ejs");
@@ -23,6 +22,7 @@ function Running() {
 	//get
 	router.get("/", function (req, res) {
 		res.render('index');
+		elevRepo.writeAll();
 	});
 
 	app.get("/list", (req, res) => {
@@ -48,10 +48,11 @@ function Running() {
 			parseInt(req.body.nota),
 			Index - 1
 		);
+		elevRepo.writeOne(Elev);
 		elevRepo.add(Index, Elev);
 		Index += 1;
-		console.log(elevRepo.getAllData());
-		console.log("Nume " + Elev.nume);
+		//console.log(elevRepo.getAllData());
+		//console.log("Nume " + Elev.nume);
 		res.render("list", { list: elevRepo.getAllData() });
 	});
 
