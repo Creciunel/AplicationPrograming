@@ -48,9 +48,9 @@ var connection = mysql.createConnection({
 async function conect() {
 	connection.connect(function (err) {
 		if (err) {
-			return err;
+			return false;
 		}
-		return connection.threadId;
+		return true;
 	});
 }
 
@@ -79,7 +79,7 @@ async function readOne(id) {
 	let query = {
 		sql: "SELECT * FROM `elev` WHERE id = " + id + ";",
 		nestTables: "_",
-	}; ;
+	};
 
 	connection.query(query, function (error, results, fields) {
 		if (error) {
