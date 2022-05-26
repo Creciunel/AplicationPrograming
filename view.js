@@ -16,17 +16,23 @@ function Running() {
 	//init
 	const router = express.Router();
 	app.use(bodyParser.urlencoded({ extended: true }));
-
 	app.use(express.urlencoded());
 
 	//get
 	router.get("/", function (req, res) {
 		res.render('index');
-		elevRepo.writeAll();
+		elevRepo.conect().then(()=>{
+			elevRepo.readOne(11);
+		});
+		
 	});
 
-	app.get("/list", (req, res) => {
-		res.render("list", { list: elevRepo.getAllData() });
+	 app.get("/list", (req, res) => {
+		elevRepo.readAll().then(result =>{
+			console.log(result);
+			res.render("list", { list: elevRepo.getAllData() });
+		}) 
+		
 	});
 
 	app.get("/list:id", (req, res) => {
@@ -51,8 +57,6 @@ function Running() {
 		elevRepo.writeOne(Elev);
 		elevRepo.add(Index, Elev);
 		Index += 1;
-		//console.log(elevRepo.getAllData());
-		//console.log("Nume " + Elev.nume);
 		res.render("list", { list: elevRepo.getAllData() });
 	});
 

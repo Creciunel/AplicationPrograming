@@ -26,6 +26,7 @@ function clear() {
 //Data Base
 
 const mysql = require("mysql");
+let global = 0;
 
 var connection = mysql.createConnection({
 	host: "45.86.86.252",
@@ -34,19 +35,29 @@ var connection = mysql.createConnection({
 	database: "catalin",
 });
 
-connection.connect(function (err) {
-	if (err) {
-		console.error("error connecting: " + err.stack);
-		return;
-	}
+// connection.connect(function (err) {
+// 	if (err) {
+// 		console.error("error connecting: " + err.stack);
+// 		return;
+// 	}
 
-	console.log("connected as id " + connection.threadId);
-});
+// 	console.log("connected as id " + connection.threadId);
+// 	return connection.threadId;
+// });
+
+async function conect() {
+	connection.connect(function (err) {
+		if (err) {
+			return err;
+		}
+		return connection.threadId;
+	});
+}
 
 //scrierea unui element
-function readOne(elev) {
+function writeOne(elev) {
 	let query =
-		"INSERT INTO `elev`(`nume`, `prenume`, `nota`) VALUES ('" +
+		"INSERT INTO elev(`nume`, `prenume`, `nota`) VALUES ('" +
 		elev.nume +
 		"','" +
 		elev.prenume +
@@ -64,28 +75,57 @@ function readOne(elev) {
 }
 
 //citirea unui element
-function writeAll(id) {
-	let query = "SELECT * FROM `elev` WHERE id = " + id + ";";
+async function readOne(id) {
+	let query = {
+		sql: "SELECT * FROM `elev` WHERE id = " + id + ";",
+		nestTables: "_",
+	}; ;
 
 	connection.query(query, function (error, results, fields) {
 		if (error) {
 			console.log(error);
 		}
-		console.log("The solution is: ", results);
-		return results;
+		// console.log("The solution is: ", results);
+		var string = JSON.stringify(results);
+		var json = JSON.parse(string);
+		//console.log(json[0].elev_id);
+		return json[0].elev_id;
 	});
 }
 
 //citirea mai multor elemente
-function writeAll() {
-	let query = "SELECT * FROM elev";
+async function readAll() {
+	let query = { sql: "SELECT * FROM elev", nestTables: "_" };
 
 	connection.query(query, function (error, results, fields) {
 		if (error) {
 			console.log(error);
 		}
-		console.log("The solution is: ", results);
-		return results;
+		// console.log('>> results.len: ', results.length );
+		var string = JSON.stringify(results);
+		var json = JSON.parse(string);
+
+		let nume;
+		let prenume;
+		let nota;
+		let id;
+
+		if (global === 0) {
+			for (let i of json) {
+				nume = i.elev_nume;
+				prenume = i.elev_prenume;
+				nota = parseInt(i.elev_nota);
+				id = parseInt(i.elev_id);
+				let student = new elev(nume, prenume, nota, id);
+
+				elevi.push(student);
+			}
+			global = 1;
+		}
+
+		// console.log(json);
+		// console.log("Data Base", elevi);
+		return elevi;
 	});
 }
 // reinnoirea unui element
@@ -137,9 +177,12 @@ module.exports = {
 	getAllData: getAllData,
 	add: add,
 	clear: clear,
+	conect: conect,
 	readOne: readOne,
-	writeAll: writeAll,
+	readAll: readAll,
+	writeOne: writeOne,
 	update: update,
-    deleteOne: deleteOne,
-    deleteAll: deleteAll,
+	deleteOne: deleteOne,
+	deleteAll: deleteAll,
+	exit: exit,
 };
